@@ -9,7 +9,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/jokester" />
+            <option value="$PROJECT_DIR$/jokeshow" />
+            <option value="$PROJECT_DIR$/jokesupply" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

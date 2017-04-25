@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Joker {
 
-    List<String> jokeList = new ArrayList<>();
+    private List<String> jokeList = new ArrayList<>();
 
     public Joker() {
         jokeList.add("Can a kangaroo jump higher than a house? Of course, a house doesn’t jump at all.");

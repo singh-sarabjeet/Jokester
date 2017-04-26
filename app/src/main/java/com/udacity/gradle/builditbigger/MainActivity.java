@@ -1,6 +1,7 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -9,11 +10,15 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.jokeshow.JokeDisplay;
-import com.joker.Joker;
+import com.example.sarabjeet.jokester.backend.myApi.MyApi;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
+    String joke = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,9 +49,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
-
-        Joker joker = new Joker();
-        String joke = joker.getJoke();
+        new RetrieveJokeTask().execute();
         if (joke != null) {
             Intent intent = new Intent(this, JokeDisplay.class);
             intent.putExtra("Joke", joke);
@@ -55,6 +58,32 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Joke Retrieved", Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(this, "derp", Toast.LENGTH_SHORT).show();
+    }
+
+    public class RetrieveJokeTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                    .setRootUrl("https://jokester-165816.appspot.com/_ah/api/");
+
+            MyApi myApiService = builder.build();
+
+            String joke = null;
+
+            try {
+                joke = myApiService.getJoke().execute().getData();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return joke;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            joke = result;
+        }
     }
 
 

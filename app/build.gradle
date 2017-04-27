@@ -18,20 +18,39 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+        free {
+            applicationId "com.udacity.gradle.builditbigger.free"
+            minSdkVersion 16
+            targetSdkVersion 25
+            versionCode 1
+            versionName '1.0'
+        }
+
+        paid {
+            minSdkVersion 16
+            applicationId 'com.udacity.gradle.builditbigger.paid'
+            targetSdkVersion 25
+            versionCode 1
+            versionName '1.0'
+        }
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile project(':jokesupply')
     compile project(':jokeshow')
+    compile project(path: ':backend', configuration: 'android-endpoints')
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.google.android.gms:play-services-ads:10.2.1'
+    freeCompile 'com.google.android.gms:play-services-ads:10.2.1'
     compile 'com.google.api-client:google-api-client:1.16.0-rc'
     compile 'com.google.http-client:google-http-client:1.22.0'
     compile 'com.google.http-client:google-http-client-android:1.20.0'
     compile 'com.google.code.findbugs:jsr305:2.0.1'
-    compile project(path: ':backend', configuration: 'android-endpoints')
+    compile 'com.android.support:support-v4:25.3.1'
+    testCompile 'junit:junit:4.12'
 }

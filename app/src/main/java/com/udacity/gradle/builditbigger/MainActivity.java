@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -14,23 +13,49 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.jokeshow.JokeDisplay;
-import com.example.sarabjeet.jokester.backend.myApi.MyApi;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ProgressBar mProgressBar;
-    private Context mContext = this;
+    private static ProgressBar mProgressBar;
+
+    public static void showErrorToast(String error) {
+        try {
+            Context mContext = mProgressBar.getContext();
+            switch (error) {
+                case "No Network":
+                    Toast.makeText(mContext, "Hey There!! It seems you aren't connected to the internet", Toast.LENGTH_SHORT).show();
+                    break;
+                case "No Joke":
+                    Toast.makeText(mContext, "Error Retrieving a joke that matches your standards.Try Again!!", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    Toast.makeText(mContext, "Hmm Something smells fishy!! Let's come back again in sometime", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void showJoke(String joke) {
+        try {
+            Context mContext = mProgressBar.getContext();
+            mProgressBar.setVisibility(View.GONE);
+            Intent intent = new Intent(mContext, JokeDisplay.class);
+            intent.putExtra("Joke", joke);
+            mContext.startActivity(intent);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -73,57 +98,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void tellJoke(View view) {
         if (haveNetworkConnection()) {
-            mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
             mProgressBar.setVisibility(View.VISIBLE);
             new RetrieveJokeTask().execute();
         } else {
             showErrorToast("No Network");
-        }
-    }
-
-    public void showErrorToast(String error) {
-        switch (error) {
-            case "No Network":
-                Toast.makeText(this, "Hey There!! It seems you aren't connected to the internet", Toast.LENGTH_SHORT).show();
-                break;
-            case "No Joke":
-                Toast.makeText(this, "Error Retrieving a joke that matches your standards.Try Again!!", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                Toast.makeText(this, "Hmm Something smells fishy!! Let's come back again in sometime", Toast.LENGTH_SHORT).show();
-                break;
-        }
-
-    }
-
-    public class RetrieveJokeTask extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                    .setRootUrl("https://jokester-165816.appspot.com/_ah/api/");
-
-            MyApi myApiService = builder.build();
-
-            String joke = null;
-
-            try {
-                joke = myApiService.getJoke().execute().getData();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return joke;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            mProgressBar.setVisibility(View.GONE);
-            if (result != null) {
-                Intent intent = new Intent(mContext, JokeDisplay.class);
-                intent.putExtra("Joke", result);
-                startActivity(intent);
-            } else
-                showErrorToast("No Joke");
         }
     }
 }

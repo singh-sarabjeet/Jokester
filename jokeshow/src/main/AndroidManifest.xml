@@ -5,7 +5,7 @@
     <application
         android:label="@string/app_name"
         android:supportsRtl="true">
-        <activity android:name=".JokeDisplay"></activity>
+        <activity android:name=".JokeDisplay" />
     </application>
 
 </manifest>

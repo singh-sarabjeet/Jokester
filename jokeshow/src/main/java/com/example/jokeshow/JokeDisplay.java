@@ -15,6 +15,7 @@ public class JokeDisplay extends AppCompatActivity {
         String joke = intent.getStringExtra("Joke");
         TextView jokeText = (TextView) findViewById(R.id.joke_text_view);
         jokeText.setText(joke);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
 }
